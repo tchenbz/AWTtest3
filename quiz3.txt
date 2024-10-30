@@ -1,0 +1,5 @@
+Tamika Chen & Raynisha Cornelio
+Advanced Web Tech Quiz 3
+
+You have been tasked with building an API for a simple sign up page where
+individuals sign up for the service by providing their email address and their full name.

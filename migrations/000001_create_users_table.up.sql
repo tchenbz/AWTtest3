@@ -1,4 +1,3 @@
--- migrations/000002_create_users_table.up.sql
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
