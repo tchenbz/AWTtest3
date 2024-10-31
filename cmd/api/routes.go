@@ -10,14 +10,12 @@ func (a *applicationDependencies) routes() http.Handler {
 	router.NotFound = http.HandlerFunc(a.notFoundResponse)
 	router.MethodNotAllowed = http.HandlerFunc(a.methodNotAllowedResponse)
 
-	// Product endpoints
 	router.HandlerFunc(http.MethodPost, "/v1/products", a.createProductHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/products/:id", a.displayProductHandler)
 	router.HandlerFunc(http.MethodPatch, "/v1/products/:id", a.updateProductHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/products/:id", a.deleteProductHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/products", a.listProductsHandler)
 
-	// Review endpoints
 	router.HandlerFunc(http.MethodPost, "/v1/products/:id/reviews", a.createReviewHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/products/:id/reviews/:review_id", a.displayReviewHandler)
 	router.HandlerFunc(http.MethodPatch, "/v1/products/:id/reviews/:review_id", a.updateReviewHandler)

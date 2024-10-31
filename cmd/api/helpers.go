@@ -14,7 +14,6 @@ import (
 	"github.com/tchenbz/AWT_Test1/internal/validator"
 )
 
-//create an envelope type
 type envelope map[string]any
 
 func (a *applicationDependencies)writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
@@ -24,14 +23,13 @@ func (a *applicationDependencies)writeJSON(w http.ResponseWriter, status int, da
 	}
 
 	jsResponse = append(jsResponse, '\n')
-	//additional headers to be set
+
 	for key, value := range headers {
 		w.Header()[key] = value
 		//w.Header().Set(key, value)
 	}
-	//set content type header
+
 	w.Header().Set("Content-Type", "application/json")
-	//explicitly set the response status code
 	w.WriteHeader(status)
 	_, err = w.Write(jsResponse)
 	if err != nil {
@@ -42,7 +40,6 @@ func (a *applicationDependencies)writeJSON(w http.ResponseWriter, status int, da
 }
 
 func (a *applicationDependencies)readJSON(w http.ResponseWriter, r *http.Request, destination any) error {
-	//err := json.NewDecoder(r.Body).Decode(destination)
 	maxBytes := 256_000
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 	dec := json.NewDecoder(r.Body)
@@ -78,10 +75,8 @@ func (a *applicationDependencies)readJSON(w http.ResponseWriter, r *http.Request
 		case errors.As(err, &maxBytesError):
 			return fmt.Errorf("the body must not be larger than %d bytes", maxBytesError.Limit)
 
-	   // the programmer messed up
 	   case errors.As(err, &invalidUnmarshalError):
 			panic(err)
-	  // some other type of error
 	   default:
 			return err
 
@@ -95,9 +90,7 @@ func (a *applicationDependencies)readJSON(w http.ResponseWriter, r *http.Request
 }
 
 func (a *applicationDependencies)readIDParam(r *http.Request)(int64, error) {
-	// Get the URL parameters
     params := httprouter.ParamsFromContext(r.Context())
-// Convert the id from string to int
     id, err := strconv.ParseInt(params.ByName("id"), 10, 64)
     if err != nil || id < 1 {
         return 0, errors.New("invalid id parameter")
@@ -107,11 +100,8 @@ func (a *applicationDependencies)readIDParam(r *http.Request)(int64, error) {
 
 }
 
-// getSingleQueryParameter retrieves a single query parameter by key and returns a default value if it's missing.
 func (a *applicationDependencies) getSingleQueryParameter(queryParameters url.Values, key string, defaultValue string) string {
-	// Retrieve the value from the query parameters
 	result := queryParameters.Get(key)
-	// Return the default value if the parameter is missing
 	if result == "" {
 		return defaultValue
 	}
@@ -119,18 +109,14 @@ func (a *applicationDependencies) getSingleQueryParameter(queryParameters url.Va
 }
 
 func (a *applicationDependencies) getSingleIntegerParameter(queryParameters url.Values, key string, defaultValue int, v *validator.Validator) int {
-	// Retrieve the value from the query parameters
 	result := queryParameters.Get(key)
 	
-	// Return the default value if the parameter is missing
 	if result == "" {
 		return defaultValue
 	}
 
-	// Attempt to convert the result to an integer
 	intValue, err := strconv.Atoi(result)
 	if err != nil {
-		// Add an error if conversion fails
 		v.AddError(key, "must be an integer value")
 		return defaultValue
 	}

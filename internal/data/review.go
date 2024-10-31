@@ -10,24 +10,21 @@ import (
 
 var ErrRecordNotFound = errors.New("record not found")
 
-// Review represents a review of a product
 type Review struct {
 	ID           int64     `json:"id"`
 	ProductID    int64     `json:"product_id"`
 	Content      string    `json:"content"`
 	Author       string    `json:"author"`
-	Rating       int       `json:"rating"`         // Rating, e.g., 1-5
-	HelpfulCount int       `json:"helpful_count"`  // Tracks "helpful" votes
+	Rating       int       `json:"rating"`         
+	HelpfulCount int       `json:"helpful_count"`  
 	CreatedAt    time.Time `json:"created_at"`
 	Version      int32     `json:"version"`
 }
 
-// ReviewModel wraps a database connection pool
 type ReviewModel struct {
 	DB *sql.DB
 }
 
-// Insert adds a new review to the database
 func (m ReviewModel) Insert(review *Review) error {
 	query := `
 		INSERT INTO reviews (product_id, content, author, rating, helpful_count)
@@ -42,7 +39,6 @@ func (m ReviewModel) Insert(review *Review) error {
 	return m.DB.QueryRowContext(ctx, query, args...).Scan(&review.ID, &review.CreatedAt, &review.Version)
 }
 
-// Get retrieves a specific review by productID and reviewID
 func (m ReviewModel) Get(productID, reviewID int64) (*Review, error) {
 	if productID < 1 || reviewID < 1 {
 		return nil, ErrRecordNotFound
@@ -75,7 +71,6 @@ func (m ReviewModel) Get(productID, reviewID int64) (*Review, error) {
 	return &review, nil
 }
 
-// Update modifies a review in the database
 func (m ReviewModel) Update(review *Review) error {
 	query := `
 		UPDATE reviews
@@ -101,7 +96,6 @@ func (m ReviewModel) Update(review *Review) error {
 	return nil
 }
 
-// Delete removes a review from the database
 func (m ReviewModel) Delete(productID, reviewID int64) error {
 	if productID < 1 || reviewID < 1 {
 		return ErrRecordNotFound
@@ -131,7 +125,6 @@ func (m ReviewModel) Delete(productID, reviewID int64) error {
 	return nil
 }
 
-// GetAll retrieves a list of reviews with optional filtering, sorting, and pagination.
 func (m ReviewModel) GetAll(content, author string, rating int, filters Filters) ([]*Review, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT COUNT(*) OVER(), id, product_id, content, author, rating, helpful_count, created_at, version
@@ -189,7 +182,6 @@ func (m ReviewModel) GetAll(content, author string, rating int, filters Filters)
 	return reviews, metadata, nil
 }
 
-// GetAllForProduct retrieves all reviews for a specific product ID, with optional filtering, sorting, and pagination.
 func (m ReviewModel) GetAllForProduct(productID int64, content, author string, rating int, filters Filters) ([]*Review, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT COUNT(*) OVER(), id, product_id, content, author, rating, helpful_count, created_at, version

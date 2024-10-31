@@ -41,7 +41,6 @@ func ValidateProduct(v *validator.Validator, product *Product) {
 	v.Check(product.ImageURL != "", "image_url", "must be provided")
 }
 
-// Get retrieves a specific product by ID.
 func (m ProductModel) Get(id int64) (*Product, error) {
 	if id < 1 {
 		return nil, ErrRecordNotFound
@@ -80,7 +79,6 @@ func (m ProductModel) Get(id int64) (*Product, error) {
 	return &product, nil
 }
 
-// Update modifies a product in the database.
 func (m ProductModel) Update(product *Product) error {
 	query := `
 		UPDATE products
@@ -113,7 +111,6 @@ func (m ProductModel) Update(product *Product) error {
 	return nil
 }
 
-// Delete removes a product from the database by its ID.
 func (m ProductModel) Delete(id int64) error {
 	if id < 1 {
 		return ErrRecordNotFound
@@ -143,7 +140,6 @@ func (m ProductModel) Delete(id int64) error {
 	return nil
 }
 
-// GetAll retrieves a list of products with optional filtering, sorting, and pagination.
 func (m ProductModel) GetAll(name, category string, filters Filters) ([]*Product, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT COUNT(*) OVER(), id, name, description, category, image_url, average_rating, created_at, version

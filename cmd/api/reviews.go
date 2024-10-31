@@ -35,12 +35,12 @@ func (a *applicationDependencies) createReviewHandler(w http.ResponseWriter, r *
 		Rating:    input.Rating,
 	}
 
-	v := validator.New()
-	data.ValidateReview(v, review)
-	if !v.IsEmpty() {
-		a.failedValidationResponse(w, r, v.Errors)
-		return
-	}
+	// v := validator.New()
+	// data.ValidateReview(v, review)
+	// if !v.IsEmpty() {
+	// 	a.failedValidationResponse(w, r, v.Errors)
+	// 	return
+	// }
 
 	err = a.reviewModel.Insert(review)
 	if err != nil {
@@ -144,22 +144,20 @@ func (a *applicationDependencies) updateReviewHandler(w http.ResponseWriter, r *
 		review.HelpfulCount = *input.HelpfulCount
 	}
 
-	// Validate the updated review
-	v := validator.New()
-	data.ValidateReview(v, review)
-	if !v.IsEmpty() {
-		a.failedValidationResponse(w, r, v.Errors)
-		return
-	}
+	// // Validate the updated review
+	// v := validator.New()
+	// data.ValidateReview(v, review)
+	// if !v.IsEmpty() {
+	// 	a.failedValidationResponse(w, r, v.Errors)
+	// 	return
+	// }
 
-	// Perform the update in the database
 	err = a.reviewModel.Update(review)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
-	// Respond with the updated review data
 	data := envelope{"review": review}
 	err = a.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
@@ -167,9 +165,7 @@ func (a *applicationDependencies) updateReviewHandler(w http.ResponseWriter, r *
 	}
 }
 
-// deleteReviewHandler handles DELETE requests for removing a specific review by product and review ID.
 func (a *applicationDependencies) deleteReviewHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract the product ID and review ID from the URL
 	productID, err := a.readIDParam(r)
 	if err != nil {
 		a.notFoundResponse(w, r)
@@ -181,7 +177,6 @@ func (a *applicationDependencies) deleteReviewHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	// Attempt to delete the review
 	err = a.reviewModel.Delete(productID, reviewID)
 	if err != nil {
 		switch {
@@ -193,7 +188,6 @@ func (a *applicationDependencies) deleteReviewHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	// Send a JSON response confirming deletion
 	data := envelope{"message": "review successfully deleted"}
 	err = a.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
@@ -201,9 +195,7 @@ func (a *applicationDependencies) deleteReviewHandler(w http.ResponseWriter, r *
 	}
 }
 
-// listReviewsHandler handles GET requests for listing all reviews with optional filters.
 func (a *applicationDependencies) listReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	// Create a struct to hold the query parameters
 	var input struct {
 		Content string
 		Author  string
@@ -211,7 +203,6 @@ func (a *applicationDependencies) listReviewsHandler(w http.ResponseWriter, r *h
 		data.Filters
 	}
 
-	// Load the query parameters into the input struct
 	query := r.URL.Query()
 	input.Content = a.getSingleQueryParameter(query, "content", "")
 	input.Author = a.getSingleQueryParameter(query, "author", "")
@@ -221,7 +212,6 @@ func (a *applicationDependencies) listReviewsHandler(w http.ResponseWriter, r *h
 	input.Filters.Sort = a.getSingleQueryParameter(query, "sort", "id")
 	input.Filters.SortSafeList = []string{"id", "rating", "helpful_count", "-id", "-rating", "-helpful_count"}
 
-	// Validate the filters
 	v := validator.New()
 	data.ValidateFilters(v, input.Filters)
 	if !v.IsEmpty() {
@@ -229,14 +219,12 @@ func (a *applicationDependencies) listReviewsHandler(w http.ResponseWriter, r *h
 		return
 	}
 
-	// Retrieve the reviews based on the filters
 	reviews, metadata, err := a.reviewModel.GetAll(input.Content, input.Author, input.Rating, input.Filters)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
-	// Send the reviews list and metadata in JSON format
 	data := envelope{
 		"reviews":  reviews,
 		"metadata": metadata,
@@ -247,16 +235,13 @@ func (a *applicationDependencies) listReviewsHandler(w http.ResponseWriter, r *h
 	}
 }
 
-// listProductReviewsHandler handles GET requests for listing reviews for a specific product with optional filters.
 func (a *applicationDependencies) listProductReviewsHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract the product ID from the URL
 	productID, err := a.readIDParam(r)
 	if err != nil {
 		a.notFoundResponse(w, r)
 		return
 	}
 
-	// Create a struct to hold the query parameters
 	var input struct {
 		Content string
 		Author  string
@@ -264,7 +249,6 @@ func (a *applicationDependencies) listProductReviewsHandler(w http.ResponseWrite
 		data.Filters
 	}
 
-	// Load the query parameters into the input struct
 	query := r.URL.Query()
 	input.Content = a.getSingleQueryParameter(query, "content", "")
 	input.Author = a.getSingleQueryParameter(query, "author", "")
@@ -274,7 +258,6 @@ func (a *applicationDependencies) listProductReviewsHandler(w http.ResponseWrite
 	input.Filters.Sort = a.getSingleQueryParameter(query, "sort", "id")
 	input.Filters.SortSafeList = []string{"id", "rating", "helpful_count", "-id", "-rating", "-helpful_count"}
 
-	// Validate the filters
 	v := validator.New()
 	data.ValidateFilters(v, input.Filters)
 	if !v.IsEmpty() {
@@ -282,14 +265,12 @@ func (a *applicationDependencies) listProductReviewsHandler(w http.ResponseWrite
 		return
 	}
 
-	// Retrieve reviews for the specific product with filters applied
 	reviews, metadata, err := a.reviewModel.GetAllForProduct(productID, input.Content, input.Author, input.Rating, input.Filters)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
-	// Send the reviews list and metadata in JSON format
 	data := envelope{
 		"reviews":  reviews,
 		"metadata": metadata,
