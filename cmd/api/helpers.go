@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/tchenbz/AWT_Test1/internal/validator"
 )
 
 //create an envelope type
@@ -103,4 +105,35 @@ func (a *applicationDependencies)readIDParam(r *http.Request)(int64, error) {
 
     return id, nil
 
+}
+
+// getSingleQueryParameter retrieves a single query parameter by key and returns a default value if it's missing.
+func (a *applicationDependencies) getSingleQueryParameter(queryParameters url.Values, key string, defaultValue string) string {
+	// Retrieve the value from the query parameters
+	result := queryParameters.Get(key)
+	// Return the default value if the parameter is missing
+	if result == "" {
+		return defaultValue
+	}
+	return result
+}
+
+func (a *applicationDependencies) getSingleIntegerParameter(queryParameters url.Values, key string, defaultValue int, v *validator.Validator) int {
+	// Retrieve the value from the query parameters
+	result := queryParameters.Get(key)
+	
+	// Return the default value if the parameter is missing
+	if result == "" {
+		return defaultValue
+	}
+
+	// Attempt to convert the result to an integer
+	intValue, err := strconv.Atoi(result)
+	if err != nil {
+		// Add an error if conversion fails
+		v.AddError(key, "must be an integer value")
+		return defaultValue
+	}
+
+	return intValue
 }

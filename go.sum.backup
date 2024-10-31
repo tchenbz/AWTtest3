@@ -1,0 +1,6 @@
+github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
+github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
+github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/tchenbz/comments v0.0.0-20241030145402-e0efaad093a9 h1:6QbfZ4yAj4zR8pox/MLy8aqIEqIdSwBTi74qrdvpCRk=
+github.com/tchenbz/comments v0.0.0-20241030145402-e0efaad093a9/go.mod h1:3n/JW7t+Sy28U9FpDffJHHpgM5DniMenkED+eBaFeQ8=

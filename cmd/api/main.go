@@ -11,7 +11,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/tchenbz/AWT_Quiz3/internal/data"
+	"github.com/tchenbz/AWT_Test1/internal/data"
 )
 
 const appVersion = "1.0.0"
@@ -25,9 +25,10 @@ type serverConfig struct {
 }
 
 type applicationDependencies struct {
-	config     serverConfig
-	logger     *slog.Logger
-	userModel  data.UserModel
+	config        serverConfig
+	logger        *slog.Logger
+	productModel  data.ProductModel
+	reviewModel   data.ReviewModel
 }
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 
 	flag.IntVar(&settings.port, "port", 4000, "Server port")
 	flag.StringVar(&settings.environment, "env", "development", "Environment (development|staging|production)")
-	flag.StringVar(&settings.db.dsn, "db-dsn", os.Getenv("QUIZ3_DB_DSN"), "PostgreSQL DSN")
+	flag.StringVar(&settings.db.dsn, "db-dsn", os.Getenv("TEST1_DB_DSN"), "PostgreSQL DSN")
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -51,7 +52,8 @@ func main() {
 	appInstance := &applicationDependencies{
 		config:    settings,
 		logger:    logger,
-		userModel: data.UserModel{DB: db},
+		productModel: data.ProductModel{DB: db},
+		reviewModel: data.ReviewModel{DB: db},
 	}
 
 	apiServer := &http.Server{

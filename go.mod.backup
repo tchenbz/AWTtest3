@@ -1,0 +1,11 @@
+module github.com/tchenbz/AWT_Test1
+
+go 1.23
+
+require (
+	github.com/julienschmidt/httprouter v1.3.0
+	github.com/lib/pq v1.10.9
+	github.com/tchenbz/comments v0.0.0-20241030145402-ec36b32
+)
+
+replace github.com/tchenbz/AWT_Test1 => /Users/tamikachen/Documents/AWT_Test1

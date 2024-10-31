@@ -1,6 +1,6 @@
 module github.com/tchenbz/AWT_Test1
 
-go 1.22.2
+go 1.23
 
 require (
 	github.com/julienschmidt/httprouter v1.3.0

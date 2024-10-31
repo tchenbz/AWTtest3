@@ -2,7 +2,7 @@
 .PHONY: run/api
 run/api:
 	@echo 'Running application…'
-	@go run ./cmd/api -port=4000 -env=development -db-dsn=${QUIZ3_DB_DSN}
+	@go run ./cmd/api -port=4000 -env=development -db-dsn=${TEST_DB_DSN}
 
 ## db/psql: connect to the database using psql (terminal)
 .PHONY: db/psql
@@ -19,4 +19,4 @@ db/migrations/new:
 .PHONY: db/migrations/up
 db/migrations/up:
 	@echo 'Running up migrations...'
-	migrate -path ./migrations -database ${QUIZ3_DB_DSN} up
+	migrate -path ./migrations -database ${TEST_DB_DSN} up
