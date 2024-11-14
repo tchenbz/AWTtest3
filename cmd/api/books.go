@@ -9,12 +9,11 @@ import (
 	"github.com/tchenbz/AWT_Test1/internal/validator"
 )
 
-func (a *applicationDependencies) createProductHandler(w http.ResponseWriter, r *http.Request) {
+func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Category    string `json:"category"`
-		ImageURL    string `json:"image_url"`
+		Title        string `json:"title"`
+		Author string `json:"author"`
+		Genre    string `json:"genre"`
 	}
 
 	err := a.readJSON(w, r, &input)
@@ -23,44 +22,43 @@ func (a *applicationDependencies) createProductHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	product := &data.Product{
-		Name:        input.Name,
-		Description: input.Description,
-		Category:    input.Category,
-		ImageURL:    input.ImageURL,
+	book := &data.Book{
+		Title:    input.Title,
+		Author:   input.Author,
+		Genre:    input.Genre,
 	}
 
 	v := validator.New()
-	data.ValidateProduct(v, product)
+	data.ValidateBook(v, book)
 	if !v.IsEmpty() {
 		a.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	err = a.productModel.Insert(product)
+	err = a.bookModel.Insert(book)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
 	headers := make(http.Header)
-	headers.Set("Location", fmt.Sprintf("/v1/products/%d", product.ID))
+	headers.Set("Location", fmt.Sprintf("/v1/books/%d", book.ID))
 
-	data := envelope{"product": product}
+	data := envelope{"book": book}
 	err = a.writeJSON(w, http.StatusCreated, data, headers)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}
 }
 
-func (a *applicationDependencies) displayProductHandler(w http.ResponseWriter, r *http.Request) {
+func (a *applicationDependencies) displayBookHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)
 	if err != nil {
 		a.notFoundResponse(w, r)
 		return
 	}
 
-	product, err := a.productModel.Get(id)
+	book, err := a.bookModel.Get(id)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -71,21 +69,21 @@ func (a *applicationDependencies) displayProductHandler(w http.ResponseWriter, r
 		return
 	}
 
-	data := envelope{"product": product}
+	data := envelope{"book": book}
 	err = a.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}
 }
 
-func (a *applicationDependencies) updateProductHandler(w http.ResponseWriter, r *http.Request) {
+func (a *applicationDependencies) updateBookHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)
 	if err != nil {
 		a.notFoundResponse(w, r)
 		return
 	}
 
-	product, err := a.productModel.Get(id)
+	book, err := a.bookModel.Get(id)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -97,10 +95,9 @@ func (a *applicationDependencies) updateProductHandler(w http.ResponseWriter, r 
 	}
 
 	var input struct {
-		Name        *string `json:"name"`
-		Description *string `json:"description"`
-		Category    *string `json:"category"`
-		ImageURL    *string `json:"image_url"`
+		Title        *string `json:"title"`
+		Author 		 *string `json:"author"`
+		Genre    	 *string `json:"genre"`
 	}
 
 	err = a.readJSON(w, r, &input)
@@ -109,47 +106,44 @@ func (a *applicationDependencies) updateProductHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	if input.Name != nil {
-		product.Name = *input.Name
+	if input.Title != nil {
+		book.Title = *input.Title
 	}
-	if input.Description != nil {
-		product.Description = *input.Description
+	if input.Author != nil {
+		book.Author = *input.Author
 	}
-	if input.Category != nil {
-		product.Category = *input.Category
-	}
-	if input.ImageURL != nil {
-		product.ImageURL = *input.ImageURL
+	if input.Genre != nil {
+		book.Genre = *input.Genre
 	}
 
 	v := validator.New()
-	data.ValidateProduct(v, product)
+	data.ValidateBook(v, book)
 	if !v.IsEmpty() {
 		a.failedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	err = a.productModel.Update(product)
+	err = a.bookModel.Update(book)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
-	data := envelope{"product": product}
+	data := envelope{"book": book}
 	err = a.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}
 }
 
-func (a *applicationDependencies) deleteProductHandler(w http.ResponseWriter, r *http.Request) {
+func (a *applicationDependencies) deleteBookHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := a.readIDParam(r)
 	if err != nil {
 		a.notFoundResponse(w, r)
 		return
 	}
 
-	err = a.productModel.Delete(id)
+	err = a.bookModel.Delete(id)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -160,27 +154,27 @@ func (a *applicationDependencies) deleteProductHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	data := envelope{"message": "product successfully deleted"}
+	data := envelope{"message": "book successfully deleted"}
 	err = a.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 	}
 }
 
-func (a *applicationDependencies) listProductsHandler(w http.ResponseWriter, r *http.Request) {
+func (a *applicationDependencies) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Name     string
-		Category string
+		Title     string
+		Author string
 		data.Filters
 	}
 
 	query := r.URL.Query()
-	input.Name = a.getSingleQueryParameter(query, "name", "")
-	input.Category = a.getSingleQueryParameter(query, "category", "")
+	input.Title = a.getSingleQueryParameter(query, "title", "")
+	input.Author = a.getSingleQueryParameter(query, "author", "")
 	input.Filters.Page = a.getSingleIntegerParameter(query, "page", 1, validator.New())
 	input.Filters.PageSize = a.getSingleIntegerParameter(query, "page_size", 10, validator.New())
 	input.Filters.Sort = a.getSingleQueryParameter(query, "sort", "id")
-	input.Filters.SortSafeList = []string{"id", "name", "category", "-id", "-name", "-category"}
+	input.Filters.SortSafeList = []string{"id", "title", "Author", "-id", "-title", "-author"}
 
 	v := validator.New()
 	data.ValidateFilters(v, input.Filters)
@@ -189,14 +183,14 @@ func (a *applicationDependencies) listProductsHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	products, metadata, err := a.productModel.GetAll(input.Name, input.Category, input.Filters)
+	books, metadata, err := a.bookModel.GetAll(input.Title, input.Author, input.Filters)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
 	data := envelope{
-		"products": products,
+		"books": books,
 		"metadata": metadata,
 	}
 	err = a.writeJSON(w, http.StatusOK, data, nil)

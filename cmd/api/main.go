@@ -31,7 +31,7 @@ type serverConfig struct {
 type applicationDependencies struct {
 	config        serverConfig
 	logger        *slog.Logger
-	productModel  data.ProductModel
+	bookModel  	data.BookModel
 	reviewModel   data.ReviewModel
 }
 
@@ -40,7 +40,7 @@ func main() {
 
 	flag.IntVar(&settings.port, "port", 4000, "Server port")
 	flag.StringVar(&settings.environment, "env", "development", "Environment (development|staging|production)")
-	flag.StringVar(&settings.db.dsn, "db-dsn", os.Getenv("TEST2_DB_DSN"), "PostgreSQL DSN")
+	flag.StringVar(&settings.db.dsn, "db-dsn", os.Getenv("TEST3_DB_DSN"), "PostgreSQL DSN")
 	flag.Float64Var(&settings.limiter.rps, "limiter-rps", 2, "Rate Limiter maximum requests per second")
 	flag.IntVar(&settings.limiter.burst, "limiter-burst", 5, "Rate Limiter maximum burst")
 	flag.BoolVar(&settings.limiter.enabled, "limiter-enabled", true, "Enable rate limiter")
@@ -59,7 +59,7 @@ func main() {
 	appInstance := &applicationDependencies{
 		config:    settings,
 		logger:    logger,
-		productModel: data.ProductModel{DB: db},
+		bookModel: data.BookModel{DB: db},
 		reviewModel: data.ReviewModel{DB: db},
 	}
 

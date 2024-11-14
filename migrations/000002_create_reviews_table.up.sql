@@ -1,6 +1,6 @@
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
-    product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    book_id INT NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     author VARCHAR(100) NOT NULL,
     rating INT CHECK (rating >= 1 AND rating <= 5),
