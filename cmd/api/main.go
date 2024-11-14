@@ -9,7 +9,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/tchenbz/AWT_Test1/internal/data"
+	"github.com/tchenbz/AWT_Test3/internal/data"
 )
 
 const appVersion = "1.0.0"

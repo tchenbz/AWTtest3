@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/tchenbz/AWT_Test1/internal/data"
-	"github.com/tchenbz/AWT_Test1/internal/validator"
+	"github.com/tchenbz/AWT_Test3/internal/data"
+	"github.com/tchenbz/AWT_Test3/internal/validator"
 )
 
 func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *http.Request) {
