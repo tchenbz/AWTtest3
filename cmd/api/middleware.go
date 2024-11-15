@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"golang.org/x/time/rate"
+    "github.com/dgrijalva/jwt-go"
 )
 
 func (a *applicationDependencies)recoverPanic(next http.Handler)http.Handler {
@@ -71,4 +73,27 @@ func (a *applicationDependencies) rateLimit(next http.Handler) http.Handler {
         next.ServeHTTP(w, r)
     })
 
+}
+
+func CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        tokenString := r.Header.Get("Authorization")
+        if tokenString == "" {
+            http.Error(w, "Unauthorized", http.StatusUnauthorized)
+            return
+        }
+
+        tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+        token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+            return []byte("your-secret-key"), nil
+        })
+
+        if err != nil || !token.Valid {
+            http.Error(w, "Unauthorized", http.StatusUnauthorized)
+            return
+        }
+
+        // Proceed to next handler if token is valid
+        next.ServeHTTP(w, r)
+    })
 }

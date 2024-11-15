@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/tchenbz/AWT_Test3/internal/data"
-	"github.com/tchenbz/AWT_Test3/internal/validator"
+	"github.com/tchenbz/AWTtest3/internal/data"
+	"github.com/tchenbz/AWTtest3/internal/validator"
 )
 
 // createReviewHandler handles POST requests for creating a new review.

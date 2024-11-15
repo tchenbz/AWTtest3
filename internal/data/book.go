@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tchenbz/AWT_Test3/internal/validator"
+	"github.com/tchenbz/AWTtest3/internal/validator"
 )
 
 type Book struct {
